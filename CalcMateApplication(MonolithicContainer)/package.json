@@ -1,0 +1,38 @@
+{
+  "name": "calcmate",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A responsive React web application for calculus problem-solving (limits, derivatives, integrals) with step-by-step explanations, LaTeX-style results, and session-based ephemeral history.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom --passWithNoTests",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "katex": "^0.16.9",
+    "mathjs": "^12.5.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "react-dropzone": "^14.2.3",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.30.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

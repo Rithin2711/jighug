@@ -1,0 +1,44 @@
+.app-alert {
+  background: #ffdede;
+  color: #a90000;
+  border: 1px solid #ff7878;
+  border-radius: 8px;
+  padding: 9px 14px;
+  margin: 10px 0 12px 0;
+  animation: alert-in 0.21s;
+}
+
+@keyframes alert-in {
+  0% { margin-top: -22px; opacity: 0; }
+  100% { margin-top: 0; opacity: 1; }
+}
+
+input, select, textarea, .cm-btn {
+  font-size: 1rem;
+  padding: 9px 12px;
+  border: 1px solid #c2c5cc;
+  border-radius: 7px;
+  margin: 5px 0;
+  outline: none;
+  transition: border 0.18s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border: 1.8px solid #304ffe;
+}
+
+.cm-btn {
+  background: #304ffe;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 6px;
+  border: none;
+  transition: background 0.18s;
+}
+
+.cm-btn:disabled {
+  background: #b4c3fd;
+  color: #e4eaff;
+  cursor: not-allowed;
+}
