@@ -1,4 +1,4 @@
-import { evaluate, derivative, parse, simplify, format, integrate, round, abs } from 'mathjs';
+import { evaluate, derivative, parse, integrate } from 'mathjs';
 
 // PUBLIC_INTERFACE
 /**
@@ -11,14 +11,12 @@ import { evaluate, derivative, parse, simplify, format, integrate, round, abs } 
  * @returns {Promise<Object>} A result object containing displayLatex, stepLatex, and error (if any)
  */
 export async function calculate({ type, expression, variable, point }) {
-  let displayLatex = "", numeric = null, stepLatex = [], error = "";
+  let displayLatex = "", stepLatex = [], error = "";
   try {
     if (!expression || !variable.match(/^[a-zA-Z]$/)) {
       return { error: "Input error: Check your function and variable." };
     }
-
     let parsed, numericVal, atPoint;
-
     switch (type) {
       case "derivative":
         parsed = parse(expression);
@@ -78,9 +76,7 @@ export async function calculate({ type, expression, variable, point }) {
 function toLatex(expr) {
   // Try to print a latex representation using mathjs
   try {
-    // If an expression node, call .toTex()
     if (typeof expr !== 'string' && expr.toTex) return expr.toTex();
-    // Otherwise, parse first
     return parse(expr).toTex();
   } catch {
     return expr.toString();
@@ -90,20 +86,18 @@ function toLatex(expr) {
 function toNumber(str) {
   if (typeof str === "number") return str;
   if (!str) throw new Error("Not a number.");
-  // Allow pi/e
   let s = str.replace(/π/g, 'pi').replace(/÷/g, '/');
   return evaluate(s);
 }
 
 /**
- * Try evaluating a limit step-by-step, handling direct substitution, 0/0, and basic L'Hospital's Rule.
+ * Try evaluating a limit step-by-step: direct substitution, 0/0, L'Hospital.
  */
 function tryLimit(exprStr, variable, atPoint) {
   let stepLatex = [];
   let expr, directEval, numer, denom;
   try {
     expr = parse(exprStr);
-    // Try direct substituion
     directEval = expr.evaluate({ [variable]: atPoint });
     if (typeof directEval === 'number' && isFinite(directEval)) {
       stepLatex.push(`\\text{Direct substitution gives: } ${directEval}`);
@@ -139,25 +133,22 @@ function splitFraction(expr) {
 }
 
 /**
- * Try to compute integral of parsed expr with respect to variable using mathjs integrate or a fallback for polynomials.
+ * Compute integral of parsed expr w.r.t. variable using mathjs integrate, fallback for polynomials.
  */
 function tryIntegrate(parsedExpr, variable) {
-  // Try mathjs's integrate first
   if (integrate) {
     try {
       return integrate(parsedExpr, variable);
     } catch {
-      // Try fallback
+      // Fallback
     }
   }
-  // Fallback: can only support limited polynomials
-  // (Not full step-by-step for arbitrary input)
   return "unable:Integration/step not implemented for this function.";
 }
 
 // ========== Exported helper to generate intermediate step latex if needed ==========
 /**
- * Generates an array of LaTeX strings for step-by-step explanation (for future extensibility).
+ * Generates an array of LaTeX strings for step-by-step explanation.
  * This is a stub for now, but could be made to compute real steps.
  * @param calculationObj
  */

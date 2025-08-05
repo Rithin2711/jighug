@@ -1,6 +1,6 @@
 import React from 'react';
 import 'katex/dist/katex.min.css';
-import { BlockMath } from 'react-katex';
+import { BlockMath } from './react-katex';
 
 // PUBLIC_INTERFACE
 /**

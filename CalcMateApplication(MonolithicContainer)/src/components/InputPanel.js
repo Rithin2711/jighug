@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { calculate, getStepLatex } from '../lib/calculusEngine';
+import { calculate } from '../lib/calculusEngine';
 import LatexRenderer from './LatexRenderer';
 
 // PUBLIC_INTERFACE
