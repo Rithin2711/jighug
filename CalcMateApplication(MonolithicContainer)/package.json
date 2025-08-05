@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "katex": "^0.16.9",
-    "mathjs": "^12.5.0",
+    "mathjs": "^12.4.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
