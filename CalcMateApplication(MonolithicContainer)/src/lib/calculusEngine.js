@@ -1,4 +1,4 @@
-import { evaluate, derivative, parse, integrate } from 'mathjs';
+import { evaluate, derivative, parse } from 'mathjs';
 
 // PUBLIC_INTERFACE
 /**
@@ -133,17 +133,35 @@ function splitFraction(expr) {
 }
 
 /**
- * Compute integral of parsed expr w.r.t. variable using mathjs integrate, fallback for polynomials.
+ * Compute integral of parsed expr w.r.t. variable for basic polynomials only.
+ * For more complex expressions, a better symbolic integrator would be required.
  */
 function tryIntegrate(parsedExpr, variable) {
-  if (integrate) {
-    try {
-      return integrate(parsedExpr, variable);
-    } catch {
-      // Fallback
+  // Try to symbolically integrate x^n -> x^(n+1)/(n+1) + C for polynomials
+  try {
+    // This is a very basic and limited fallback: only works for monomials like x^2, 3*x, or x
+    // For demo purposes only, not a real CAS!
+    let str = parsedExpr.toString();
+    let match = str.match(/^([0-9.]*)\s*\*?\s*([a-zA-Z])(?:\^([0-9.]+))?$/);
+    if (match && match[2] === variable) {
+      const coef = match[1] === "" ? 1 : parseFloat(match[1]);
+      const power = match[3] ? parseFloat(match[3]) : 1;
+      const newPower = power + 1;
+      const newCoef = coef / newPower;
+      if (newCoef === 1)
+        return `${variable}^${newPower}/${newPower}`;
+      else
+        return `${newCoef}*${variable}^${newPower}`;
     }
+    // handle constant c: ∫c dx = c*x
+    let constMatch = str.match(/^([0-9.]+)$/);
+    if (constMatch)
+      return `${constMatch[1]}*${variable}`;
+    // If not recognized, return unable
+    return "unable:Integration/step not implemented for this function.";
+  } catch {
+    return "unable:Integration/step not implemented for this function.";
   }
-  return "unable:Integration/step not implemented for this function.";
 }
 
 // ========== Exported helper to generate intermediate step latex if needed ==========
