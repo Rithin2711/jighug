@@ -2,18 +2,27 @@ import React, { useState } from 'react';
 import { calculate } from '../lib/calculusEngine';
 import LatexRenderer from './LatexRenderer';
 
-// PUBLIC_INTERFACE
 /**
- * Component for user input: selects type, receives input, validates and calculates on submit.
+ * Component for user input:
+ * - If "forcedType" prop is set, locks the mode and hides the dropdown, provides a "Back" button.
+ * - Otherwise, shows the mode dropdown as before.
  * @param onCalculate - callback for successful calculation
  * @param onInputError - callback for error display
+ * @param forcedType - (optional) lock mode to 'integral'|'derivative'|'limit'
+ * @param onBack - (optional) callback for back button to mode selection
  */
-function InputPanel({ onCalculate, onInputError }) {
-  const [calcType, setCalcType] = useState('derivative');
+// PUBLIC_INTERFACE
+function InputPanel({ onCalculate, onInputError, forcedType = null, onBack }) {
+  const [calcType, setCalcType] = useState(forcedType || 'derivative');
   const [input, setInput] = useState('');
   const [variable, setVariable] = useState('x');
-  const [calcPoint, setCalcPoint] = useState(''); // For limit, derivative at point
+  const [calcPoint, setCalcPoint] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Update calcType if forcedType changes (for when returning to selection)
+  React.useEffect(() => {
+    if (forcedType) setCalcType(forcedType);
+  }, [forcedType]);
 
   const resetFields = () => {
     setInput('');
@@ -64,18 +73,61 @@ function InputPanel({ onCalculate, onInputError }) {
     }
   };
 
-  return (
-    <form className="input-panel" onSubmit={handleCalculate} style={{marginBottom:20}}>
-      <label>
-        Type:
-        <select value={calcType} onChange={e => setCalcType(e.target.value)} style={{marginLeft:8}}>
-          <option value="derivative">Derivative</option>
-          <option value="integral">Integral</option>
-          <option value="limit">Limit</option>
-        </select>
-      </label>
+  // Fancier label for forcedType
+  const getForcedLabel = () => {
+    switch (forcedType) {
+      case "integral": return <>Integral</>;
+      case "derivative": return <>Differential</>;
+      case "limit": return <>Limit</>;
+      default: return null;
+    }
+  };
 
-      <label style={{marginLeft:12}}>
+  return (
+    <form className="input-panel" onSubmit={handleCalculate} style={{marginBottom:20, marginTop:14}}>
+      {forcedType ? (
+        <div style={{display:'flex', alignItems:'center', marginBottom:10, gap:12}}>
+          <span style={{
+            display:'inline-flex',
+            alignItems:'center',
+            fontWeight:600,
+            color:'#304ffe',
+            fontSize:'1.10em',
+            letterSpacing:'0.01em'
+          }}>
+            <span style={{marginRight:8, fontSize:'1.29em', opacity:0.88}}>
+              {forcedType === "integral" && "∫"}
+              {forcedType === "derivative" && "𝑑/dx"}
+              {forcedType === "limit" && "lim"}
+            </span>
+            {getForcedLabel()}
+          </span>
+          <button type="button"
+            className="cm-btn"
+            style={{
+              background: "#e6edff",
+              color: "#314dda",
+              fontWeight:600,
+              marginLeft:14,
+              fontSize:"0.99em"
+            }}
+            onClick={onBack}
+          >
+            ← Change Problem Type
+          </button>
+        </div>
+      ) : (
+        <label>
+          Type:
+          <select value={calcType} onChange={e => setCalcType(e.target.value)} style={{marginLeft:8}}>
+            <option value="derivative">Derivative</option>
+            <option value="integral">Integral</option>
+            <option value="limit">Limit</option>
+          </select>
+        </label>
+      )}
+
+      <label style={{marginLeft:forcedType ? 0 : 12}}>
         Variable:
         <input type="text"
           value={variable}
